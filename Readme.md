@@ -7,6 +7,7 @@ Obtain the pollen data of Tokyo and Osaka city in 2018 from Google Trend and con
 ## Graph
 
 ![Graph for pollen in Tokyo and Osaka](./pollen_tokyo-osaka.jpg)
+
 There is no direct data comparation between Tokyo and Osaka, just shows the variation rate during the period.
 
 ## Dependencies
