@@ -20,17 +20,22 @@ if __name__ == '__main__':
     pytrend = TrendReq(hl='ja-jp',tz=540)
     kw_list = ['花粉症']
 
-    # Tokyo's code is JP-13
-    df_tokyo = interest_over_time(kw_list, 'JP-13')
-    df_tokyo.columns = ['Tokyo']
-    # Osaka's code is JP-27
-    df_osaka = interest_over_time(kw_list, 'JP-27')
-    df_osaka.columns = ['Osaka']
+    pytrend.build_payload(kw_list, timeframe='2019-02-01 2019-06-30', geo='JP-27')
+    # print(pytrend.interest_over_time())
 
-    df = pd.concat([df_tokyo, df_osaka], axis=1)
-    df.index.name = None
-    df.plot()
-    plt.savefig('./pollen_tokyo-osaka.jpg')
+    # # Tokyo's code is JP-13
+    # df_tokyo = interest_over_time(kw_list, 'JP-13')
+    # df_tokyo.columns = ['Tokyo']
+    # # Osaka's code is JP-27
+    # df_osaka = interest_over_time(kw_list, 'JP-27')
+    # df_osaka.columns = ['Osaka']
 
-    with pd.ExcelWriter('pollen_tokyo-osaka.xlsx', date_format='YYYY-MM-DD') as writer:
-        df.to_excel(writer)
+    # df = pd.concat([df_tokyo, df_osaka], axis=1)
+    # df.index.name = None
+    # df.plot()
+    # plt.savefig('./pollen_tokyo-osaka.jpg')
+
+    # with pd.ExcelWriter('pollen_tokyo-osaka.xlsx', date_format='YYYY-MM-DD') as writer:
+    #     df.to_excel(writer)
+
+    print(pytrend.interest_by_region(resolution='CITY', inc_low_vol=True))
