@@ -36,7 +36,7 @@ class TrendReq(object):
     CATEGORIES_URL = 'https://trends.google.com/trends/api/explore/pickers/category'
     TODAY_SEARCHES_URL = 'https://trends.google.com/trends/api/dailytrends'
 
-    def __init__(self, hl='en-US', tz=360, geo='', timeout=(2, 5), proxies='',
+    def __init__(self, hl='en-US', tz=360, geo='', geo_name='', timeout=(2, 5), proxies='',
                  retries=0, backoff_factor=0, requests_args=None):
         """
         Initialize default values for params
@@ -48,6 +48,7 @@ class TrendReq(object):
         self.tz = tz
         self.hl = hl
         self.geo = geo
+        self.geo_name = geo_name        
         self.kw_list = list()
         self.timeout = timeout
         self.proxies = proxies  # add a proxy option
@@ -148,10 +149,11 @@ class TrendReq(object):
                 response=response)
 
     def build_payload(self, kw_list, cat=0, timeframe='today 5-y', geo='',
-                      gprop=''):
+                      gprop='', geo_name=''):
         """Create the payload for related queries, interest over time and interest by region"""
         self.kw_list = kw_list
         self.geo = geo or self.geo
+        self.geo_name = geo_name or self.geo_name
         self.token_payload = {
             'hl': self.hl,
             'tz': self.tz,
@@ -283,7 +285,7 @@ class TrendReq(object):
             # there is currently a bug with assigning columns that may be
             # parsed as a date in pandas: use explicit insert column method
             # result_df.insert(len(result_df.columns), kw,
-            result_df.insert(len(result_df.columns), kw + ' ' + self.geo,
+            result_df.insert(len(result_df.columns), kw + ' ' + self.geo_name,
                              result_df[idx].astype('int'))
             del result_df[idx]
 
