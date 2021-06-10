@@ -310,7 +310,7 @@ class TrendReq(object):
 
         # make the request
         region_payload = dict()
-        print(self.geo)
+        # print(self.geo)
         if self.geo == '':
             self.interest_by_region_widget['request'][
                 'resolution'] = resolution
@@ -335,7 +335,10 @@ class TrendReq(object):
             params=region_payload,
         )
         df = pd.DataFrame(req_json['default']['geoMapData'])
+
         if (df.empty):
+            for idx, kw in enumerate(self.kw_list):
+                df[[kw + self.geo_name]] = None
             return df
 
         # rename the column with the search keyword
@@ -351,8 +354,9 @@ class TrendReq(object):
 
         # rename each column with its search term
         for idx, kw in enumerate(self.kw_list):
-            result_df[kw] = result_df[idx].astype('int')
+            result_df[kw + self.geo_name] = result_df[idx].astype('int')
             del result_df[idx]
+            
 
         return result_df
 
