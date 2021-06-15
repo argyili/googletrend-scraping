@@ -37,12 +37,12 @@ def interest_over_time(kw_list, timeframe, geo, geo_name):
 
 def interest_by_region(kw_list, timeframe, geo, geo_name):
     pytrend.build_payload(kw_list, timeframe=timeframe, geo=geo, geo_name=geo_name)
-    df = pytrend.interest_by_region(resolution='CITY', inc_low_vol=True, inc_geo_code=False)
+    df = pytrend.interest_by_region(inc_low_vol=True, inc_geo_code=False)
     return df
 
 def fetch_interest(kw_list, timeframe, matrix):
     df_sum = None
-    for i in range(46):
+    for i in range(47):
         index = str(i + 1)
         geo_name = matrix[i][1]
         if (i + 1) < 10:
@@ -51,7 +51,6 @@ def fetch_interest(kw_list, timeframe, matrix):
         df_sum = pd.concat([df_sum, df], axis=1)
 
     df_sum.to_pickle('./files/df_sum_' + timeframe + '.pkl')
-
     output  = pd.read_pickle('./files/df_sum_' + timeframe + '.pkl')
     plt.rcParams['font.family'] = 'IPAexGothic'
     output.plot(figsize=(20,20))
@@ -59,10 +58,23 @@ def fetch_interest(kw_list, timeframe, matrix):
 
     with pd.ExcelWriter('./files/pollen_japan_' + timeframe + '.xlsx', date_format='YYYY-MM-DD') as writer:
         output.to_excel(writer)
+    
+    fetch_interestValue_regions(kw_list, timeframe, matrix)
 
-def fetch_interest_cities(kw_list, timeframe, matrix):
+def fetch_interestValue_regions(kw_list, timeframe, matrix):
+    df_regions_ = interest_by_region(kw_list, timeframe, geo='JP', geo_name='Japan')
+    df_regions_.to_pickle('./files/df_regions_' + timeframe + '.pkl')
+    output  = pd.read_pickle('./files/df_regions_' + timeframe + '.pkl')
+    plt.rcParams['font.family'] = 'IPAexGothic'
+    output.plot(figsize=(20,20))
+    plt.savefig('./files/pollen_japan_regions_' + timeframe + '.jpg')
+
+    with pd.ExcelWriter('./files/pollen_japan_regions_' + timeframe + '.xlsx', date_format='YYYY-MM-DD') as writer:
+        output.to_excel(writer)
+
+def fetch_interestValue_cities(kw_list, timeframe, matrix):
     df_sum = None
-    for i in range(46):
+    for i in range(47):
         index = str(i + 1)
         geo_name = matrix[i][1]
         if (i + 1) < 10:
@@ -90,19 +102,18 @@ if __name__ == '__main__':
     # Automatically fetch daily data for short period
     timeframe='2018-02-01 2018-06-30'
     fetch_interest(kw_list, timeframe, matrix)
-    fetch_interest_cities(kw_list, timeframe, matrix)
-    
+    fetch_interestValue_cities(kw_list, timeframe, matrix)
 
     timeframe='2019-02-01 2019-06-30'
     fetch_interest(kw_list, timeframe, matrix)
-    fetch_interest_cities(kw_list, timeframe, matrix)
+    fetch_interestValue_cities(kw_list, timeframe, matrix)
 
     # Automatically fetch weekly data for long period
     timeframe='2018-02-01 2019-06-30'
     fetch_interest(kw_list, timeframe, matrix)
-    fetch_interest_cities(kw_list, timeframe, matrix)
+    fetch_interestValue_cities(kw_list, timeframe, matrix)
 
-    # Automatically fetch monthly data for long period
-    timeframe='2004-02-01 2019-06-30'
+    # Automatically fetch monthly data for even longer period
+    timeframe='2004-01-01 2019-06-30'
     fetch_interest(kw_list, timeframe, matrix)
-    fetch_interest_cities(kw_list, timeframe, matrix)
+    fetch_interestValue_cities(kw_list, timeframe, matrix)

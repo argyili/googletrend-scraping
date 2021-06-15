@@ -200,57 +200,6 @@ class TrendReq(object):
                 self.related_queries_widget_list.append(widget)
         return
 
-    # def interest_over_time(self):
-    #     """Request data from Google's Interest Over Time section and return a dataframe"""
-
-    #     over_time_payload = {
-    #         # convert to string as requests will mangle
-    #         'req': json.dumps(self.interest_over_time_widget['request']),
-    #         'token': self.interest_over_time_widget['token'],
-    #         'tz': self.tz
-    #     }
-
-    #     # make the request and parse the returned json
-    #     req_json = self._get_data(
-    #         url=TrendReq.INTEREST_OVER_TIME_URL,
-    #         method=TrendReq.GET_METHOD,
-    #         trim_chars=5,
-    #         params=over_time_payload,
-    #     )
-
-    #     df = pd.DataFrame(req_json['default']['timelineData'])
-    #     if (df.empty):
-    #         return df
-
-    #     df['date'] = pd.to_datetime(df['time'].astype(dtype='float64'),
-    #                                 unit='s')
-    #     df = df.set_index(['date']).sort_index()
-    #     # split list columns into seperate ones, remove brackets and split on comma
-    #     result_df = df['value'].apply(lambda x: pd.Series(
-    #         str(x).replace('[', '').replace(']', '').split(',')))
-    #     # rename each column with its search term, relying on order that google provides...
-    #     for idx, kw in enumerate(self.kw_list):
-    #         # there is currently a bug with assigning columns that may be
-    #         # parsed as a date in pandas: use explicit insert column method
-    #         result_df.insert(len(result_df.columns), kw,
-    #                          result_df[idx].astype('int'))
-    #         del result_df[idx]
-
-    #     if 'isPartial' in df:
-    #         # make other dataframe from isPartial key data
-    #         # split list columns into seperate ones, remove brackets and split on comma
-    #         df = df.fillna(False)
-    #         result_df2 = df['isPartial'].apply(lambda x: pd.Series(
-    #             str(x).replace('[', '').replace(']', '').split(',')))
-    #         result_df2.columns = ['isPartial']
-    #         # concatenate the two dataframes
-    #         final = pd.concat([result_df, result_df2], axis=1)
-    #     else:
-    #         final = result_df
-    #         final['isPartial'] = False
-
-    #     return final
-
     def interest_over_time(self):
         """Request data from Google's Interest Over Time section and return a dataframe"""
 
@@ -285,7 +234,7 @@ class TrendReq(object):
             # there is currently a bug with assigning columns that may be
             # parsed as a date in pandas: use explicit insert column method
             # result_df.insert(len(result_df.columns), kw,
-            result_df.insert(len(result_df.columns), kw + ' ' + self.geo_name,
+            result_df.insert(len(result_df.columns), self.geo_name + ' ' + kw,
                              result_df[idx].astype('int'))
             del result_df[idx]
 
@@ -354,7 +303,7 @@ class TrendReq(object):
 
         # rename each column with its search term
         for idx, kw in enumerate(self.kw_list):
-            result_df[kw + self.geo_name] = result_df[idx].astype('int')
+            result_df[self.geo_name + " " + kw] = result_df[idx].astype('int')
             del result_df[idx]
             
 
