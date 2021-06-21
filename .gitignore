@@ -3,8 +3,7 @@ __pycache__/
 .vscode/
 
 files/*
-!/files/pollen_japan.jpg
-
-datas/
+!./files/pollen_japan.jpg
+!./files/temp_date_osaka_day.jpg
 
 *.xlsx

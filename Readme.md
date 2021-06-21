@@ -1,16 +1,17 @@
-# Program to Scrape Google Trend
+# Program to Scrape Google Trend and Ministry of Environment in Japan
 
 ## Theme
 
 Pollen search data extraction and analysis from Google Trends.
-<!-- Obtain the pollen data of Tokyo and Osaka city in 2018 from Google Trend and convert it into Excel file. -->
+Heat illness prevention information from Ministry of Environment in Japan.
 
 ## Graph
 
-![Rough Graph for pollen searches in Japan](./files/pollen_japan.jpg)
+![Pollen searches in Japan](./files/pollen_japan.jpg)
+Demo graph for pollen searches in Japan.
 
-Rough Graph for pollen searches in Japan.
-<!-- There is no direct data comparation between Tokyo and Osaka, just shows the variation rate during the period. -->
+![Illness prevention information in Osaka](./files/.jpg)
+Demo graph for heat illness prevention information in Osaka.
 
 ## Dependencies
 
@@ -18,7 +19,10 @@ Rough Graph for pollen searches in Japan.
 - numpy
 - matlotlib
 - openpyxl
+- datetime
+- request
+- BeautifulSoup
 
 ## References
 
-Adapted from [Pytrends](https://pypi.org/project/pytrends/).
+Adapted from [Pytrends](https://pypi.org/project/pytrends/) in GoogleTrends part.

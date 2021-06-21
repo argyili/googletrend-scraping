@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
+import matplotlib.pyplot as plt
+import datetime
+import os
+
 def searchDate(address, temp_date_day, temp_date_night):
     page = requests.get(address)
 
@@ -20,19 +24,18 @@ def searchDate(address, temp_date_day, temp_date_night):
     
     date = []
     for i in range(len(yy)):
-        date.append(yy[i] + "年" + mm[i] + "月" + dd[i] + "日")
-
+        if yy[i] == '年':
+            continue
+        date.append(datetime.date(int(yy[i]), int(mm[i]), int(dd[i])))
+        
     # del(date[0])
     midLen = len(date) // 2
-    date_day = date[1:midLen]
-    date_night = date[midLen + 1:]
-    date_day.insert(0, '')
-    date_night.insert(0, '')
+    date_day = pd.DataFrame(date[1:midLen])
+    date_day.columns=['']
+    date_night = pd.DataFrame(date[midLen + 1:])
+    date_night.columns=['']
 
-    temp_date_day = pd.DataFrame(date_day)
-    temp_date_night = pd.DataFrame(date_night)
-
-    return temp_date_day, temp_date_night
+    return date_day, date_night
 
 def searchRegion(address, temp_date_day, temp_date_night):
     page = requests.get(address)
@@ -42,13 +45,13 @@ def searchRegion(address, temp_date_day, temp_date_night):
 
     temp = []
     for el in soup.find_all(class_= re.compile("data map_ct_lv" + "."  + " selected")):
-        temp.append(el.text)
+        temp.append(float(el.text))
     
     midLen = len(temp) // 2
-    temp_day = temp[:midLen]
-    temp_night = temp[midLen:]
-    temp_day.insert(0, region)
-    temp_night.insert(0, region)
+    temp_day = pd.DataFrame(temp[:midLen])
+    temp_night = pd.DataFrame(temp[midLen:])
+    temp_day.columns=[region]
+    temp_night.columns=[region]
 
     temp_date_day = pd.concat([temp_date_day, pd.DataFrame(temp_day)], axis=1)
     temp_date_night = pd.concat([temp_date_night, pd.DataFrame(temp_night)], axis=1)
@@ -56,9 +59,6 @@ def searchRegion(address, temp_date_day, temp_date_night):
     return temp_date_day, temp_date_night
 
 if __name__ == '__main__':
-
-    # global temp_date_day
-    # global temp_date_night
 
     temp_date_day = pd.DataFrame()
     temp_date_night = pd.DataFrame()
@@ -84,7 +84,18 @@ if __name__ == '__main__':
     # 熊取
     temp_date_day, temp_date_night = searchRegion('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62131&tab=5', temp_date_day, temp_date_night)
 
-    with pd.ExcelWriter('temp_date_osaka.xlsx') as writer:
+    if not os.path.exists('./files'):
+        os.makedirs('./files')
+        
+    plt.rcParams['font.family'] = 'IPAexGothic'
+    temp_date_day.plot(figsize=(8,8))
+    plt.savefig('./files/temp_date_osaka_day.jpg')
+
+    plt.rcParams['font.family'] = 'IPAexGothic'
+    temp_date_night.plot(figsize=(8,8))
+    plt.savefig('./files/temp_date_osaka_night.jpg')
+
+    with pd.ExcelWriter('./files/temp_date_osaka.xlsx') as writer:
         df = pd.DataFrame(temp_date_day)
         df.to_excel(writer, sheet_name='temp_day_2020', header=False, index=False)
         df = pd.DataFrame(temp_date_night)
