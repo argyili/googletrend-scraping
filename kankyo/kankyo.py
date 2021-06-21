@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
 import datetime
 import os
 
@@ -30,9 +31,9 @@ def searchDate(address, temp_date_day, temp_date_night):
         
     # del(date[0])
     midLen = len(date) // 2
-    date_day = pd.DataFrame(date[1:midLen])
+    date_day = pd.DataFrame(date[:midLen])
     date_day.columns=['']
-    date_night = pd.DataFrame(date[midLen + 1:])
+    date_night = pd.DataFrame(date[midLen:])
     date_night.columns=['']
 
     return date_day, date_night
@@ -88,16 +89,16 @@ if __name__ == '__main__':
         os.makedirs('./files')
         
     plt.rcParams['font.family'] = 'IPAexGothic'
-    temp_date_day.plot(figsize=(8,8))
+    temp_date_day.set_index('').plot(figsize=(8,8))
     plt.savefig('./files/temp_date_osaka_day.jpg')
 
     plt.rcParams['font.family'] = 'IPAexGothic'
-    temp_date_night.plot(figsize=(8,8))
+    temp_date_night.set_index('').plot(figsize=(8,8))
     plt.savefig('./files/temp_date_osaka_night.jpg')
 
     with pd.ExcelWriter('./files/temp_date_osaka.xlsx') as writer:
         df = pd.DataFrame(temp_date_day)
-        df.to_excel(writer, sheet_name='temp_day_2020', header=False, index=False)
+        df.to_excel(writer, sheet_name='temp_day_2020', index=False)
         df = pd.DataFrame(temp_date_night)
-        df.to_excel(writer, sheet_name='temp_night_2020', header=False, index=False)
+        df.to_excel(writer, sheet_name='temp_night_2020', index=False)
   
