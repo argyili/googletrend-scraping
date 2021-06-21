@@ -2,5 +2,9 @@ __pycache__/
 
 .vscode/
 
-files/
+files/*
+!/files/pollen_japan.jpg
+
 datas/
+
+*.xlsx
