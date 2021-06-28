@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 import datetime
 import os
+import json
 
 def searchDate(address, temp_date_day, temp_date_night):
     page = requests.get(address)
@@ -64,37 +65,25 @@ if __name__ == '__main__':
     temp_date_day = pd.DataFrame()
     temp_date_night = pd.DataFrame()
 
-    # 天気
-    temp_date_day, temp_date_night = searchDate('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62016&tab=5', temp_date_day, temp_date_night)
+    f = open('test.json')
+    json_input = json.load(f)
+    print(json_input)
 
-    # 能勢
-    temp_date_day, temp_date_night = searchRegion('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62016&tab=5', temp_date_day, temp_date_night)
-
-    # 枚方
-    temp_date_day, temp_date_night = searchRegion('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62046&tab=5', temp_date_day, temp_date_night)
-
-    # 大阪
-    temp_date_day, temp_date_night = searchRegion('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62078&tab=5', temp_date_day, temp_date_night)
-
-    # 生駒山
-    temp_date_day, temp_date_night = searchRegion('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62081&tab=5', temp_date_day, temp_date_night)
-
-    # 堺
-    temp_date_day, temp_date_night = searchRegion('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62091&tab=5', temp_date_day, temp_date_night)
-
-    # 熊取
-    temp_date_day, temp_date_night = searchRegion('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62131&tab=5', temp_date_day, temp_date_night)
+    string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' +  + '&prefecture=' +  + '&point='  ' + &tab=5'
+    # # 天気
+    # temp_date_day, temp_date_night = searchDate('https://www.wbgt.env.go.jp/doc_trendcal.php?region=07&prefecture=62&point=62016&tab=5', temp_date_day, temp_date_night)
 
     if not os.path.exists('./files'):
         os.makedirs('./files')
         
-    plt.rcParams['font.family'] = 'IPAexGothic'
-    temp_date_day.set_index('').plot(figsize=(8,8))
-    plt.savefig('./files/temp_date_osaka_day.jpg')
+    # plt.rcParams['font.family'] = 'IPAexGothic'
+    # temp_date_day.set_index('').plot(figsize=(8,8))
+    # plt.savefig('./files/temp_date_osaka_day.jpg')
 
-    plt.rcParams['font.family'] = 'IPAexGothic'
-    temp_date_night.set_index('').plot(figsize=(8,8))
-    plt.savefig('./files/temp_date_osaka_night.jpg')
+    # plt.rcParams['font.family'] = 'IPAexGothic'
+    # temp_date_night.set_index('').plot(figsize=(8,8))
+    # plt.savefig('./files/temp_date_osaka_night.jpg')
+
 
     with pd.ExcelWriter('./files/temp_date_osaka.xlsx') as writer:
         df = pd.DataFrame(temp_date_day)
