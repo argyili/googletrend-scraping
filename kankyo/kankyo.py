@@ -8,6 +8,7 @@ from matplotlib.dates import DateFormatter
 import datetime
 import os
 import json
+import csv
 
 def searchDate(address):
     page = requests.get(address)
@@ -65,6 +66,21 @@ def searchRegion(address, date, temp_date_day, temp_date_night, temp_date):
 
     return temp_date_day, temp_date_night, temp_date
 
+def checkGeo(region):
+    df =pd.read_csv('geoData.csv')
+    querySentence= 'name=="'+ str(region) + '"'
+    dfRegion = df.query(querySentence)
+    dfRegion = dfRegion.reset_index(drop=True)
+    laDegree = dfRegion.at[0, 'laDegree']
+    laMinute = dfRegion.at[0, 'laMinute']
+    la = laDegree + laMinute / 60
+    loDegree = dfRegion.at[0, 'loDegree']
+    loMinute = dfRegion.at[0, 'loMinute']
+    lo = loDegree + loMinute / 60
+
+    
+    return la, lo
+
 def searchRegion2nd(address, date, temp_date_day, temp_date_night, temp_date):
     page = requests.get(address)
     
@@ -73,15 +89,27 @@ def searchRegion2nd(address, date, temp_date_day, temp_date_night, temp_date):
     if region == '':
         return temp_date_day, temp_date_night, temp_date
 
+    # print(region)
+    geoCodeLa, geoCodeLo = checkGeo(region)
+
     regionList = []
     for i in range(len(date)):
         regionList.append(region)
-
+    geoLaList = []
+    for i in range(len(date)):
+        geoLaList.append(geoCodeLa)
+    geoLoList = []
+    for i in range(len(date)):
+        geoLoList.append(geoCodeLo)
+    pdRegionList = pd.DataFrame(regionList)
+    pdRegionList.columns=['City']
+    pdGeoList = pd.concat([pd.DataFrame(geoLaList), pd.DataFrame(geoLoList)], axis=1)
+    pdGeoList.columns=['Latitude', 'Longtitude']
     temp = []
     for el in soup.find_all(class_= re.compile("data map_ct_lv" + "."  + " selected")):
         temp.append(float(el.text))
-    
-
+    if temp == []:
+        return temp_date_day, temp_date_night, temp_date
     midLen = len(temp) // 2
     temp_day = pd.DataFrame(temp[:midLen])
     temp_night = pd.DataFrame(temp[midLen:])
@@ -90,13 +118,13 @@ def searchRegion2nd(address, date, temp_date_day, temp_date_night, temp_date):
 
     temp_date_day = pd.concat([temp_date_day, temp_day], axis=1)
     temp_date_night = pd.concat([temp_date_night, temp_night], axis=1)
-    temp_temp = pd.concat([pd.DataFrame(regionList), date, temp_day, temp_night], axis=1)
+    temp_temp = pd.concat([pdRegionList, date, temp_day, temp_night, pdGeoList], axis=1)
     temp_date = pd.concat([temp_date, temp_temp], axis=0)
 
     return temp_date_day, temp_date_night, temp_date
 
-if __name__ == '__main__':
-
+def process(tab):
+    
     tempDateList = []
 
     f = open('data.json')
@@ -107,8 +135,9 @@ if __name__ == '__main__':
     pointDict = geoDict['point']
 
     for i in range(len(regionDict)):
-        # if i > 0:
-        #     break
+    # for i in range(1):
+        # if i != 2:
+        #     continue
         temp_date_day = pd.DataFrame()
         temp_date_night = pd.DataFrame()
         temp_date = pd.DataFrame()
@@ -122,19 +151,21 @@ if __name__ == '__main__':
         prefectureList = prefectureDict.get(region)
         for j in range(len(prefectureList)):
             # if j > 1:
-            #     break
+                # break
             prefecture = prefectureList[j][0]
             pointList = pointDict.get(prefecture)
             for k in range(len(pointList)):
                 # if k > 1:
-                #     break
+                    # break
                 point = pointList[k][0]
-                string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' + region + '&prefecture=' + prefecture + '&point=' + point + '&tab=5'
-                # string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' + '02' + '&prefecture=' + '34' + '&point=' + '34296' + '&tab=5'
+                string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' + region + '&prefecture=' + prefecture + '&point=' + point + '&tab='+tab
+                # string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' + '03' + '&prefecture=' + '44' + '&point=' + '4435' + '&tab=1'
                 print(string)
 
                 # temp_date_day, temp_date_night, temp_date = searchRegion(string, date, temp_date_day, temp_date_night, temp_date)
                 temp_date_day, temp_date_night, temp_date = searchRegion2nd(string, date, temp_date_day, temp_date_night, temp_date)
+                
+
         print(temp_date)
         tempDateList.append(temp_date)
 
@@ -142,12 +173,17 @@ if __name__ == '__main__':
         os.makedirs('./files')
         
 
-
-    with pd.ExcelWriter('./files/temp_date_2020.xlsx') as writer:
+    year = str(int(tab) + 2015)
+    with pd.ExcelWriter('./files/heatStroke'+year+'.xlsx') as writer:
         for i in range(len(tempDateList)):
             df = pd.DataFrame(tempDateList[i])
             df.to_excel(writer, sheet_name=regionDict[i][1], index=False)
 
-            plt.rcParams['font.family'] = 'IPAexGothic'
-            tempDateList[i].set_index('').plot(figsize=(8,8))
-            plt.savefig('./files/temp_date_japan_' + regionDict[i][1] + '.jpg')
+            # plt.rcParams['font.family'] = 'IPAexGothic'
+            # tempDateList[i].set_index('').plot(figsize=(8,8))
+            # plt.savefig('./files/temp_date_japan_' + regionDict[i][1] + '.jpg')
+
+if __name__ == '__main__':
+    for index in range(0, 5):
+        print(index)
+        process(str(index+1))
