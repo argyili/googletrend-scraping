@@ -67,9 +67,14 @@ def searchRegion(address, date, temp_date_day, temp_date_night, temp_date):
     return temp_date_day, temp_date_night, temp_date
 
 def checkGeo(region):
-    df =pd.read_csv('geoData.csv')
+    df = pd.read_csv('geoData.csv')
     querySentence= 'name=="'+ str(region) + '"'
     dfRegion = df.query(querySentence)
+
+    if dfRegion.empty:
+        with open('lostCity.txt', 'a+') as f:
+            f.write(region + ' ')
+        return 0, 0
     dfRegion = dfRegion.reset_index(drop=True)
     laDegree = dfRegion.at[0, 'laDegree']
     laMinute = dfRegion.at[0, 'laMinute']
@@ -159,7 +164,7 @@ def process(tab):
                     # break
                 point = pointList[k][0]
                 string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' + region + '&prefecture=' + prefecture + '&point=' + point + '&tab='+tab
-                # string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' + '03' + '&prefecture=' + '44' + '&point=' + '4435' + '&tab=1'
+                # string = 'https://www.wbgt.env.go.jp/doc_trendcal.php?region=' + '10' + '&prefecture=' + '86' + '&point=' + '86156' + '&tab=1'
                 print(string)
 
                 # temp_date_day, temp_date_night, temp_date = searchRegion(string, date, temp_date_day, temp_date_night, temp_date)
