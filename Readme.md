@@ -1,4 +1,4 @@
-# Program to do web scraping for Research Assistant
+# Web scraping program for Research Assistant
 
  <!-- Scrape Google Trend and Ministry of Environment in Japan -->
 
