@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 import csv
 import re
+from openpyxl import load_workbook
+
 
 def txtToCsv():
     ls = open("./files/provinces.txt").readlines()
@@ -48,12 +50,13 @@ def pageResuests(address):
 def getCities(address):
     page = pageResuests(address)
     soup = BeautifulSoup(page.content, 'html.parser')
-    cities = soup.find_all('ul',attrs={'class':'flat'})[3].find_all('a')
+    # Access from [3] to [4]
+    cities = soup.find_all('ul',attrs={'class':'flat'})[4].find_all('a')
     ret = np.empty(shape=[0,2], dtype=str)
     for i in cities:
         index = str(i.attrs['href']).split('=')[1]
         ret = np.append(ret, [[index, str(i.text)]], axis=0)
-         
+
     return ret
 
 def classify(cities, provinces, provList):
@@ -130,7 +133,9 @@ if __name__ == '__main__':
             continue
 
         provIndex = str(i + 1)
-        with pd.ExcelWriter('./files/weathers_warnings_'+provIndex+'.xlsx') as writer:
+        with pd.ExcelWriter('./files/weathers_warnings_'+provIndex+'.xlsx', engine='openpyxl', mode='a') as writer:
+            book = load_workbook('./files/weathers_warnings_'+provIndex+'.xlsx')
+            writer.book = book
             for j in range(len(provList[i])):
                 if provList[i][j].empty:
                 # print('empty')
