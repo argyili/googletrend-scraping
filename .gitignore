@@ -3,10 +3,12 @@ __pycache__/
 .vscode/
 
 files/*
+heat/filesCSV/datas/*
 /heat/files/*
 /googletrends/files/*
 
 !/files/pollen_japan.jpg
 !/files/temp_date_osaka_day.jpg
+
 
 *.xlsx

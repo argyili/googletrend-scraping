@@ -32,7 +32,7 @@ def readCsv():
     csvFile.close()
     return ret
 
-def pageResuests(address):
+def pageRequests(address):
     cnt = 0
     page = requests.Response()
     while cnt < 10:
@@ -46,7 +46,7 @@ def pageResuests(address):
 
 
 def getCities(address):
-    page = pageResuests(address)
+    page = pageRequests(address)
     soup = BeautifulSoup(page.content, 'html.parser')
     cities = soup.find_all('ul',attrs={'class':'flat'})[3].find_all('a')
     ret = np.empty(shape=[0,2], dtype=str)
@@ -85,7 +85,7 @@ def collectData(city, province, address):
         index = index + 1
         # print(city[1] + ' page ' + str(index))
         newAddress = address + str(index)
-        page = pageResuests(newAddress)
+        page = pageRequests(newAddress)
         soup = BeautifulSoup(page.content, 'html.parser')
         # attrs = '/cgi-bin/cps/warning_list.pl?acode=0520100&amp;page=2'
         # pageNum = str(soup.find('a',attrs={attrs}))
