@@ -5,6 +5,7 @@ __pycache__/
 files/*
 heat/filesCSV/datas/*
 /heat/files/*
+/heat/filesCSV (copy)/*
 /googletrends/files/*
 
 !/files/pollen_japan.jpg

@@ -75,7 +75,7 @@ def decorate(pdList, pointName):
 
     pdCityList = pd.DataFrame(cityList)
     pdCityList.columns=['City']
-    pdGeoList.columns=['Longtitude', 'Latitude']
+    pdGeoList.columns=['Latitude', 'Longtitude']
     pdList = pd.concat([pdCityList, pdList, pdGeoList], axis=1)
 
     return pdList
@@ -150,7 +150,7 @@ def process():
                         dfList.append(decorate(dfRead, pointName))
 
                     # if not dfList[im].empty:
-                    #     dfList[im].columns=['City', 'Date', 'Time', 'WBGT', 'Tg', 'Longitude', 'Latitude']
+                    #     dfList[im].columns=['City', 'Date', 'Time', 'WBGT', 'Tg', 'Latitude', 'Longitude']
             
                 with pd.ExcelWriter('./filesCSV/heatstroke'+iyStr+'_pref'+str(prefecture)+'.xlsx') as writer:
                     for index in range(len(dfList)):

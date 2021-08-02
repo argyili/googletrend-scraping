@@ -252,8 +252,8 @@ def process():
                             continue
                         df = dfList[index]
                         indexStr =str(index+month)
-                        if index+month < 10:
-                            indexStr = '0' + indexStr
+                        # if index+month < 10:
+                        #     indexStr = '0' + indexStr
                         df.to_excel(writer, sheet_name=iyStr+str(indexStr)+'_pref'+prefecturePageStr, index=False)
 
 
