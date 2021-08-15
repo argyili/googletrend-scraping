@@ -1,0 +1,8 @@
+pandas
+numpy
+matlotlib
+openpyxl
+datetime
+re
+bs4
+geocoder
