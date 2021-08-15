@@ -46,7 +46,7 @@ def downloadCSVFiles(address):
     soup = BeautifulSoup(page.content, 'html.parser')
     # Access from [3] to [4]
     if len(soup.find_all('p',attrs={'class':'recorddata'})) < 2:
-        with open('./filesCSV/lostDataCities.txt', 'a+') as f:
+        with open('./files/filesCSV/lostDataCities.txt', 'a+') as f:
             f.write(address + ' ')
         return
     cities = soup.find_all('p',attrs={'class':'recorddata'})[1].find_all('a')
@@ -57,7 +57,7 @@ def downloadCSVFiles(address):
         fileName = city.attrs['href'].split('/')[-1].split('.')[0].split('_', 2)[-1]
         print(fileName)
         r = pageRequests(fileAddress)
-        with open('./filesCSV/datas/' + fileName + '.csv', 'wb') as f:
+        with open('./files/filesCSV/datas/' + fileName + '.csv', 'wb') as f:
             f.write(r.content)
 
 def decorate(pdList, pointName):
@@ -81,8 +81,8 @@ def decorate(pdList, pointName):
     return pdList
 
 def process():
-    if not os.path.exists('./filesCSV'):
-        os.makedirs('./filesCSV')    
+    if not os.path.exists('./files/filesCSV'):
+        os.makedirs('./files/filesCSV')    
 
     f = open('data.json')
     geoDict = json.load(f)
@@ -139,7 +139,7 @@ def process():
                         pointName = pointList[k][1]
                         # string = 'https://www.wbgt.env.go.jp/record_data.php?region=' + region + '&prefecture=' + prefecture + '&point=' + point
 
-                        fileName = './filesCSV/datas/' + point + '_' + iyStr + imStr + '.csv'
+                        fileName = './files/filesCSV/datas/' + point + '_' + iyStr + imStr + '.csv'
                         dfRead = pd.DataFrame()
                         try:
                             dfRead = pd.read_csv(fileName)
@@ -152,7 +152,7 @@ def process():
                     # if not dfList[im].empty:
                     #     dfList[im].columns=['City', 'Date', 'Time', 'WBGT', 'Tg', 'Latitude', 'Longitude']
             
-                with pd.ExcelWriter('./filesCSV/heatstroke'+iyStr+'_pref'+str(prefecture)+'.xlsx') as writer:
+                with pd.ExcelWriter('./files/filesCSV/heatstroke'+iyStr+'_pref'+str(prefecture)+'.xlsx') as writer:
                     for index in range(len(dfList)):
                         indexM = index + month
                         if dfList[index].empty:
