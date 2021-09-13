@@ -3,9 +3,9 @@ from pytrends.request import TrendReq
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import rcParams
 import openpyxl
 from pathlib import Path
+import os
 
 def fecth_list_from_xlsx():
     xlsx_file = Path('geo_code_jp.xlsx')
@@ -94,7 +94,10 @@ def fetch_interestValue_cities(kw_list, timeframe, matrix):
         output.to_excel(writer)
 
 if __name__ == '__main__':
-    
+
+    if not os.path.exists('./files'):
+        os.makedirs('./files')
+
     pytrend = TrendReq(hl='ja-jp',tz=540)
     kw_list = ['花粉症']
     matrix = fecth_list_from_xlsx()
